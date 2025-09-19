@@ -6,7 +6,7 @@
   <a href="https://github.com/IAI-solution/TheNZT_Open_Source/stargazers">
     <img src="https://img.shields.io/github/stars/IAI-solution/TheNZT_Open_Source?style=social" alt="GitHub stars"/>
   </a>
-  &nbsp;
+
   <a href="https://github.com/IAI-solution/TheNZT_Open_Source/network/members">
     <img src="https://img.shields.io/github/forks/IAI-solution/TheNZT_Open_Source?style=social" alt="GitHub forks"/>
   </a>
