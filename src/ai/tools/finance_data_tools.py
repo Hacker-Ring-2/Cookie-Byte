@@ -761,7 +761,7 @@ class GetStockData(BaseTool):
                             "volume": vol_i,
                             "ticker": ticker
                         })
-                    out = list(reversed(out))  
+                    # out = list(reversed(out))  
                     return {"historical": out}
         except Exception as e:
             print(f"[DEBUG] yf.download failed for {ticker} period={yf_period}: {e}")
@@ -801,7 +801,7 @@ class GetStockData(BaseTool):
                         "volume": vol_i,
                         "ticker": ticker
                     })
-                out = list(reversed(out))
+                # out = list(reversed(out))
                 return {"historical": out}
         except Exception as e:
             print(f"[DEBUG] Ticker.history failed for {ticker}: {e}")
