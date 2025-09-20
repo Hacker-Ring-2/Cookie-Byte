@@ -45,13 +45,13 @@ In this system we mainly have 3 agents:
 
 ### 1. Fast Agent (Lite)
 #### Overview
-The Fast Agent (Insight Agent) is an AI-powered assistant designed to deliver rapid, accurate insights on companies, markets, and user-uploaded documents through a modular, multi-step architecture. It processes natural language queries using a system prompt to enforce tone and structure, routes them to specialized tools (e.g., company ticker resolution, stock data retrieval, news search, and vector-based document search via APIs like Financial Modeling Prep and Qdrant), and generates clear, brand-aligned markdown responses with inline citations.
+The Fast Agent (Insight Agent) is an AI-powered assistant designed to deliver rapid, accurate insights on companies, markets, through a modular, multi-step architecture. It processes natural language queries using a system prompt to enforce tone and structure, routes them to specialized tools (e.g., company ticker resolution, stock data retrieval, news search, and search via APIs like Financial Modeling Prep), and generates clear, brand-aligned markdown responses with inline citations.
 
 #### Workflow
 1. **User Query:** The agent receives a natural language question (e.g., “Why is Tesla’s stock falling?”).
 2. **Prompt Formatting:** The system formats the query using a predefined instruction set governing tone, structure, tool use, citations, and safety.
-3. **Routing Logic:** A control layer determines which tool(s) to trigger based on the query’s intent (e.g., finance, news, document lookup).
-4. **Tool Execution:** The chosen tool(s) fetch relevant data (e.g., ticker lookup, stock prices, news, internal document search).
+3. **Routing Logic:** A control layer determines which tool(s) to trigger based on the query’s intent (e.g., finance, news).
+4. **Tool Execution:** The chosen tool(s) fetch relevant data (e.g., ticker lookup, stock prices, news).
 5. **Response Generation:** The LLM generates a clear, well-cited markdown response using all retrieved data.
 6. **Output to User:** The final response is delivered, including inline sources, tables (if needed), and a polite, brand-aligned tone.
 
@@ -100,12 +100,6 @@ The Reasoning Agent (Pro) architecture is a dynamic, iterative system that effic
 - **Finance Data Agent**: Collects and processes financial data.
 - **Response Generator Agent**: Crafts the final response for the user.
 
-#### Agents Excluded
-- **Planner Agent**: Not utilized in this architecture.
-- **Executor Agent**: Excluded from the workflow.
-- **Sentiment Analysis Agent**: Not included.
-- **Data Comparison Agent**: Not part of the system.
-
 ![Reasoning Agent Architecture](docs/architectures/images/reasoning_agent.png)
 
 #### Workflow
@@ -141,7 +135,7 @@ cd TheNZT_Open_Source
 
 #### 2. Environment Configuration
 
-Create a `.env` file in the **project root** with your API keys:
+Create a `.env` file in the **project root** with your API keys (check .env.example):
 
 ```env
 # Required API Keys
@@ -151,7 +145,7 @@ Create a `.env` file in the **project root** with your API keys:
 
 
 # Database Configuration
-DATABASE_URL=
+MONGO_URI=
 
 # Redis Configuration
 
