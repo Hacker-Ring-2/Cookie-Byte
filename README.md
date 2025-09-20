@@ -2,15 +2,6 @@
 
 ![TheNZT Logo](docs/images/TheNZT_Logo.png)
 
-<p align="center">
-  <a href="https://github.com/IAI-solution/TheNZT_Open_Source/stargazers">
-    <img src="https://img.shields.io/github/stars/IAI-solution/TheNZT_Open_Source?style=social" alt="GitHub stars"/>
-  </a>
-
-  <a href="https://github.com/IAI-solution/TheNZT_Open_Source/network/members">
-    <img src="https://img.shields.io/github/forks/IAI-solution/TheNZT_Open_Source?style=social" alt="GitHub forks"/>
-  </a>
-</p>
 
 TheNZT is a powerful multi-agent finance query processing system designed to process and respond to finance-related queries efficiently. Leveraging advanced LLM multi-agent collaboration, it provides intelligent solutions for Finance, Company-specific, and Market-related queries.
 
