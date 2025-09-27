@@ -7,10 +7,6 @@ services:
     restart: unless-stopped
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password123
-      MONGO_INITDB_DATABASE: thenzt
     volumes:
       - mongodb_data:/data/db
     networks:
