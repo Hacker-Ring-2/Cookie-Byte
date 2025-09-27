@@ -27,6 +27,10 @@ test/*
 # Ignore venv
 .venv/
 venv/
+
+# Ignore node_modules
+node_modules/
+**/node_modules/
 # Ignore .vscode
 .vscode/
 
