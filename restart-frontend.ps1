@@ -1,19 +1,17 @@
-Write-Host "Restarting Frontend with updated configuration..." -ForegroundColor Green
+Write-Host "Restarting Frontend Server..." -ForegroundColor Yellow
 
-# Kill any existing Next.js processes on port 3000
-$processes = Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess
-if ($processes) {
-    foreach ($processId in $processes) {
-        Write-Host "Stopping process $processId on port 3000..." -ForegroundColor Yellow
-        Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
-    }
-    Start-Sleep -Seconds 2
-}
+# Kill any existing Next.js processes
+Write-Host "Stopping existing Next.js processes..." -ForegroundColor Red
+Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like "*next*" } | Stop-Process -Force -ErrorAction SilentlyContinue
 
-Write-Host "Starting Frontend on port 3000..." -ForegroundColor Cyan
+# Clear Next.js cache
+Write-Host "Clearing Next.js cache..." -ForegroundColor Yellow
+Remove-Item -Recurse -Force src/frontend/.next -ErrorAction SilentlyContinue
+
+# Wait a moment
+Start-Sleep -Seconds 2
+
+# Start frontend server
+Write-Host "Starting fresh Next.js server..." -ForegroundColor Green
 Set-Location src/frontend
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "& { npm run dev }"
-
-Write-Host ""
-Write-Host "Frontend restarted with updated API URL: http://localhost:8001" -ForegroundColor Green
-Write-Host "Frontend will be available at: http://localhost:3000" -ForegroundColor White
+npm run dev

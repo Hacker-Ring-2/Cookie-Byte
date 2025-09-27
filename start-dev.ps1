@@ -21,6 +21,8 @@ Start-Sleep -Seconds 2
 
 Write-Host ""
 Write-Host "Starting Frontend (Next.js)..." -ForegroundColor Cyan
+# Clear Next.js cache first
+Remove-Item -Recurse -Force src/frontend/.next -ErrorAction SilentlyContinue
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "& { Set-Location src/frontend; npm run dev }"
 
 Write-Host ""
