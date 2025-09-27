@@ -1,4 +1,4 @@
-aiohappyeyeballs==2.6.1
+﻿aiohappyeyeballs==2.6.1
 aiohttp==3.12.15
 aiosignal==1.4.0
 amqp==5.3.1
@@ -128,7 +128,6 @@ patsy==1.0.1
 pdfkit==1.0.0
 pdfminer.six==20250506
 pdfplumber==0.11.7
-# pdftopng==0.2.4  # Commented out - not available for Windows
 peewee==3.18.1
 pexpect==4.9.0
 pillow==11.3.0
