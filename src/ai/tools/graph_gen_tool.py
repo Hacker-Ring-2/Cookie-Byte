@@ -14,10 +14,15 @@ from src.ai.tools.graph_gen_tool_system_prompt import SYSTEM_PROMPT_STRUCT_OUTPU
 from dotenv import load_dotenv
 from src.ai.llm.model import get_llm
 from src.ai.llm.config import GraphGenerationConfig
+from src.ai.tools.financial_chart_utils import detect_chart_type_from_query, format_chart_for_response, generate_chart_from_table
 
 load_dotenv()
 
 ggc = GraphGenerationConfig()
+
+# Set up logging
+import logging
+logging.basicConfig(level=logging.INFO)
 
 # from smolagents import LiteLLMModel, CodeAgent
 
@@ -104,7 +109,7 @@ class SingleChartData(BaseModel):
 
 
 class StructOutput(BaseModel):
-    chart_type: Literal['bar', 'group_bar', 'pie', 'lines'] = Field(description="Type of the chart to be generated")
+    chart_type: Literal['bar', 'group_bar', 'pie', 'lines', 'candlestick', 'heatmap'] = Field(description="Type of the chart to be generated")
     chart_title: str = Field(description="Title of the chart")
     x_label: str = Field(description="Label for the x-axis")
     y_label: str = Field(description="Label for the y-axis")    
@@ -192,25 +197,52 @@ The table is listed below:
 
 class GraphGenToolInput(BaseModel):
     table: str = Field(description="Provide a table containing numerical data of similar property in markdown format to create the visualization chart.")
+    query: Optional[str] = Field(description="Optional user query to help determine the appropriate chart type", default="")
+    chart_type: Optional[str] = Field(description="Optional specific chart type to generate", default="")
 
 
 class GraphGenTool(BaseTool):
     name: str = "graph_generation_tool"
     description: str = """
     Use this tool to generate a visualization chart by providing the table in markdown format. The tool returns formatted data in json format.
+    Supports standard charts (bar, group_bar, pie, lines) and financial charts (candlestick, heatmap).
     """
     args_schema: Type[BaseModel] = GraphGenToolInput
 
-    def _run(self, table: str) -> str:
-        print(f"---TOOL CALL: graph_generation_tool \n --- \n Table: \n{table}\n --- \n")
-        output_string = generate_graphs(table)
+    def _run(self, table: str, query: str = "", chart_type: str = "") -> str:
+        try:
+            logging.info(f"---TOOL CALL: graph_generation_tool \n --- \n Table: \n{table}\n --- \n Query: {query} \n Chart Type: {chart_type}")
+            
+            # Check if a specific financial chart type is requested
+            if chart_type in ["candlestick", "heatmap"] or (query and any(type_name in query.lower() for type_name in ["candlestick", "heatmap", "correlation"])):
+                try:
+                    # For financial charts, we'll use our specialized utilities
+                    # Parse the table data (simplified for now)
+                    table_data = {"raw_table": table}
+                    
+                    # Generate the appropriate chart
+                    chart_data = generate_chart_from_table(table_data, query or f"generate {chart_type} chart")
+                    
+                    # Format for response
+                    output_string = format_chart_for_response(chart_data)
+                    return output_string
+                except Exception as e:
+                    logging.error(f"Error generating financial chart: {str(e)}")
+                    # Fallback to standard charts if financial chart generation fails
+                    logging.info("Falling back to standard chart generation")
+            
+            # For standard charts, use the existing graph generation logic
+            output_string = generate_graphs(table)
 
-        if output_string == "NO_CHART_GENERATED":
-            return "No chart generated; please skip creating any ```graph``` block for this table in the response."
-        
-        print(f"return from generate_graphs = {output_string}")
-
-        return output_string
+            if output_string == "NO_CHART_GENERATED":
+                return "No chart generated; please skip creating any ```graph``` block for this table in the response."
+            
+            logging.info(f"return from generate_graphs = {output_string}")
+            return output_string
+            
+        except Exception as e:
+            logging.error(f"Error in graph generation tool: {str(e)}")
+            return "Error generating chart. Please skip creating any ```graph``` block for this table in the response."
 
 graph_generation_tool = GraphGenTool()
 graph_tool_list = [graph_generation_tool]
