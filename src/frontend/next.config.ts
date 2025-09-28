@@ -13,7 +13,8 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   trailingSlash: false,
-  output: 'export',
+  // Removing static export to fix clientModules error
+  // output: 'export',
 };
 
 export default nextConfig;
