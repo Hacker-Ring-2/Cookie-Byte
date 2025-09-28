@@ -7,6 +7,43 @@ body {
   interpolate-size: allow-keywords;
 }
 
+/* Enhanced UI Animations */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+  
+  .hover-lift {
+    transition: transform 0.2s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+  
+  .card-transition {
+    transition: all 0.3s ease;
+  }
+  
+  .card-transition:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -42,16 +79,16 @@ body {
     --chart-green: 142 76% 36%;
     --financial-bg: 243, 241, 238, 0.3;
 
-    /* Primary/Brand Colors */
-    --color-primary-main: #954767; /* Main brand color */
-    --color-primary-light: #f3f1ee; /* Light variant */
-    --color-primary-dark: #351321; /* Dark variant */
-    --color-primary-800: #6d2643; /* Numbered scale - darker */
-    --color-primary-600: #a05976; /* Numbered scale - medium */
-    --color-primary-400: #bf91a4; /* Numbered scale - lighter */
-    --color-primary-200: #eadae1; /* Numbered scale - very light */
-    --color-primary-150: #fcfbfa; /* Numbered scale - very light */ /* Numbered scale - light */
-    --color-primary-100: #f3f0e8;
+    /* Primary/Brand Colors - Enhanced */
+    --color-primary-main: #7b3f5e; /* Main brand color - richer and more sophisticated */
+    --color-primary-light: #f7f5f2; /* Light variant - slightly brighter */
+    --color-primary-dark: #2a1019; /* Dark variant - deeper for better contrast */
+    --color-primary-800: #5d2039; /* Numbered scale - darker with better saturation */
+    --color-primary-600: #9a4d6d; /* Numbered scale - medium with improved vibrancy */
+    --color-primary-400: #c595a8; /* Numbered scale - lighter with better warmth */
+    --color-primary-200: #f0e0e7; /* Numbered scale - very light with subtle warmth */
+    --color-primary-150: #fefcfb; /* Numbered scale - very light with minimal tint */ 
+    --color-primary-100: #f8f5ed; /* Numbered scale - lightest with warm undertone */
     /* Numbered scale - lightest */
     /* Neutral Scale */
 
