@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from src.backend.db import mongodb
 from src.backend.core.api_limit import apiSecurityFree
 from src.backend.models.app_io_schemas import Onboarding, OnboardingRequest
+from src.backend.utils.preference_detector import detect_response_preference
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 router = APIRouter()
@@ -30,7 +31,16 @@ async def get_user_personalization(user: apiSecurityFree):
 
 @router.post("/personalization")
 async def update_user_personalization(user: apiSecurityFree, request: mongodb.PersonalizationRequest):
-    updated = await mongodb.create_or_update_personalization(user.id.__str__(), request.dict(exclude_unset=True))
+    # Get the request data
+    request_data = request.dict(exclude_unset=True)
+    
+    # If introduction is being updated, detect response preference
+    if 'introduction' in request_data and request_data['introduction']:
+        preference_result = detect_response_preference(request_data['introduction'])
+        if preference_result['preference']:
+            request_data['response_preference'] = preference_result['preference']
+    
+    updated = await mongodb.create_or_update_personalization(user.id.__str__(), request_data)
     return updated
 
 @router.delete("/user/{user_id}")
@@ -62,3 +72,22 @@ async def update_onboarding(user: apiSecurityFree, request: OnboardingRequest):
 @router.get("/get_user_info")
 async def user_by_id(user: apiSecurityFree):
     return user.to_dict()
+
+@router.post("/analyze-preference")
+async def analyze_preference(user: apiSecurityFree, text: str):
+    """
+    Analyze text to detect user preference for visual or text-based responses.
+    
+    Args:
+        text (str): Text to analyze for preference detection
+        
+    Returns:
+        Dict with preference ('visual' or 'text') and analysis details
+    """
+    from src.backend.utils.preference_detector import analyze_preference_strength
+    
+    if not text or not text.strip():
+        raise HTTPException(status_code=400, detail="Text is required for analysis")
+    
+    result = analyze_preference_strength(text.strip())
+    return result

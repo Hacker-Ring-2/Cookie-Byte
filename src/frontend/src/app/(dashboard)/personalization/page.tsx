@@ -12,6 +12,7 @@ import {
 import { toast } from 'sonner';
 import { axiosInstance } from '@/services/axiosInstance';
 import { Pencil } from 'lucide-react';
+import { detectResponsePreference, getPreferenceDisplayText, getPreferenceColor } from '@/lib/utils/preferenceDetector';
 
 const PersonalizationPage = () => {
   const [introduction, setIntroduction] = useState('');
@@ -21,7 +22,9 @@ const PersonalizationPage = () => {
   const [autoSuggest, setAutoSuggest] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [aiDataRetention, setAiDataRetention] = useState(false);
+  const [responsePreference, setResponsePreference] = useState('');
   const [editIntroduction, setEditIntroduction] = useState(false);
+  const [livePreference, setLivePreference] = useState<'visual' | 'text' | null>(null);
 
   // Loading states for buttons
   const [loadingIntroduction, setLoadingIntroduction] = useState(false);
@@ -43,6 +46,7 @@ const PersonalizationPage = () => {
         setAutoSuggest(data.autosuggest ?? true);
         setEmailNotifications(data.email_notifications ?? true);
         setAiDataRetention(data.ai_data_retention ?? true);
+        setResponsePreference(data.response_preference || '');
       } catch (error: any) {
         toast.error(error?.response?.data?.detail || ' Failed to load personalization info');
       }
@@ -73,6 +77,7 @@ const PersonalizationPage = () => {
       setAutoSuggest(updatedData.autosuggest ?? true);
       setEmailNotifications(updatedData.email_notifications ?? true);
       setAiDataRetention(updatedData.ai_data_retention ?? false);
+      setResponsePreference(updatedData.response_preference || '');
 
       toast.success('Settings saved successfully!');
       return true;
@@ -183,10 +188,32 @@ const PersonalizationPage = () => {
               <textarea
                 value={introduction}
                 disabled={!editIntroduction}
-                onChange={(e) => setIntroduction(e.target.value)}
+                onChange={(e) => {
+                  setIntroduction(e.target.value);
+                  // Real-time preference detection
+                  if (editIntroduction && e.target.value.trim()) {
+                    const result = detectResponsePreference(e.target.value);
+                    setLivePreference(result.preference);
+                  } else {
+                    setLivePreference(null);
+                  }
+                }}
                 className={`block w-full h-[6.8rem] sm:px-5 sm:py-4 py-2 px-4 resize-none rounded-xl bg-[var(--primary-chart-bg)] border border-primary-100 shadow-sm placeholder-neutral-150 focus:outline-none focus:ring-2 focus:ring-[#4B9770] sm:sm:text-sm text-xs transitiona-ll duration-200`}
                 placeholder="Tell us about yourself..."
               />
+              
+              {/* Preference Detection Indicator */}
+              {(editIntroduction ? livePreference : responsePreference) && (
+                <div className="mt-2 flex items-center gap-2 text-xs text-gray-600">
+                  <div className={`w-2 h-2 rounded-full ${
+                    getPreferenceColor(editIntroduction ? livePreference : responsePreference as any)
+                  }`}></div>
+                  <span>
+                    {editIntroduction ? 'Live detection: ' : 'Saved preference: '}
+                    {getPreferenceDisplayText(editIntroduction ? livePreference : responsePreference as any)}
+                  </span>
+                </div>
+              )}
 
               {editIntroduction ? (
                 <div className="flex justify-end gap-3 mt-4">

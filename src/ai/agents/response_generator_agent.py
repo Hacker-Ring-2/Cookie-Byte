@@ -1,5 +1,6 @@
 from .base_agent import BaseAgent
 from src.ai.agent_prompts.response_generator_agent import SYSTEM_PROMPT
+from src.ai.agent_prompts.preference_aware_prompts import get_preference_aware_prompt
 from typing import Dict, Any
 from langchain_core.messages import HumanMessage, SystemMessage
 from .utils import get_context_messages_for_response
@@ -8,6 +9,7 @@ from src.ai.llm.config import ReportGenerationConfig
 from src.ai.tools.graph_gen_tool import graph_tool_list
 from langgraph.prebuilt import create_react_agent
 from datetime import date
+import re
 
 
 rgc = ReportGenerationConfig()
@@ -61,7 +63,13 @@ class ReportGenerationAgent(BaseAgent):
         # print(f"\n state inside ReportGenerationAgent = {state}\n") #
 
         input_prompt = self.format_input_prompt(state)
-        system_message = SystemMessage(content=self.system_prompt)
+        
+        # Extract user preference from user_metadata
+        user_preference = self.extract_user_preference(state.get('user_metadata', ''))
+        
+        # Use preference-aware prompt instead of default system prompt
+        preference_aware_prompt = get_preference_aware_prompt(user_preference)
+        system_message = SystemMessage(content=preference_aware_prompt)
         human_message = HumanMessage(content=input_prompt)
 
         input = {"messages": [human_message]}
@@ -130,3 +138,26 @@ class ReportGenerationAgent(BaseAgent):
             "final_response": final_response,
             "progress_bar": progress
         }
+
+    def extract_user_preference(self, user_metadata: str) -> str:
+        """
+        Extract user preference from user metadata string
+        
+        Args:
+            user_metadata (str): The user metadata string containing preference info
+            
+        Returns:
+            str: 'visual', 'text', 'mixed', or None
+        """
+        if not user_metadata:
+            return None
+            
+        # Look for preference information in the metadata
+        if "User Response Preference: VISUAL" in user_metadata:
+            return 'visual'
+        elif "User Response Preference: TEXT" in user_metadata:
+            return 'text'
+        elif "User Response Preference: MIXED" in user_metadata:
+            return 'mixed'
+        else:
+            return None

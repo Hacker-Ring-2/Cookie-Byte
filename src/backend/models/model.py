@@ -102,6 +102,7 @@ class Personalization(Document):
     autosuggest: bool = True
     email_notifications: bool = False
     ai_data_retention: bool = False
+    response_preference: Optional[str] = None  # "visual" or "text"
     last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -123,6 +124,7 @@ class PersonalizationRequest(BaseModel):
     autosuggest: Optional[bool] = None
     email_notifications: Optional[bool] = None
     ai_data_retention: Optional[bool] = None
+    response_preference: Optional[str] = None
 
 
 class returnStatus(BaseModel):

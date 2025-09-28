@@ -1,6 +1,6 @@
 from typing import Dict, Any, List, AsyncGenerator, Optional
 from src.ai.insight_graph import InsightAgentGraph
-from src.backend.utils.utils import get_date_time, format_langgraph_message, PRICING, get_user_metadata
+from src.backend.utils.utils import get_date_time, format_langgraph_message, PRICING, get_user_metadata, get_user_metadata_with_preferences
 import traceback
 from src.ai.agents.utils import get_related_queries_util
 # from src.ai.tools.finance_data_tools import get_currency_exchange_rates
@@ -82,10 +82,10 @@ async def process_agent_input_functional(user_id: str, session_id: str, user_que
         "user_query": user_query,
         "file_path": None,
         "file_content": None,
-        "user_metadata": await asyncio.to_thread(
-            get_user_metadata,
+        "user_metadata": await get_user_metadata_with_preferences(
             timezone,
-            ip_address
+            ip_address,
+            user_id
         ),
         "realtime_info": realtime_info,
         "previous_messages": prev_session_data.get('messages', []),

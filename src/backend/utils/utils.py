@@ -104,6 +104,44 @@ def get_user_metadata(timezone: str, ip_address: str = None):
     return f"<UserMetaData>\n- User's current Datetime:{date_time.isoformat()}\n - User's current location details: {location_data_str}\n</UserMetaData>"
 
 
+async def get_user_metadata_with_preferences(timezone: str, ip_address: str = None, user_id: str = None):
+    """
+    Async version of get_user_metadata that includes user preferences
+    """
+    date_time = get_date_time(timezone)
+
+    location_data = {"location": timezone}
+
+    location_data_str = json.dumps(location_data)
+    metadata = f"<UserMetaData>\n- User's current Datetime:{date_time.isoformat()}\n - User's current location details: {location_data_str}\n"
+    
+    # Add user preference information if user_id is provided
+    if user_id:
+        try:
+            import src.backend.db.mongodb as mongodb
+            
+            # Get user personalization data
+            personalization = await mongodb.get_personalization(user_id)
+            if personalization and personalization.get('response_preference'):
+                preference = personalization['response_preference']
+                if preference == 'visual':
+                    metadata += "- User Response Preference: VISUAL (prefers big charts, graphs, and visual representations with brief text)\n"
+                elif preference == 'text':
+                    metadata += "- User Response Preference: TEXT (prefers detailed explanations and text-based content with small supporting charts)\n"
+                elif preference == 'mixed':
+                    metadata += "- User Response Preference: MIXED (prefers balanced charts, graphs and text with equal emphasis)\n"
+                else:
+                    metadata += "- User Response Preference: Not specified\n"
+            else:
+                metadata += "- User Response Preference: Not specified\n"
+        except Exception as e:
+            print(f"Error retrieving user preferences: {str(e)}")
+            metadata += "- User Response Preference: Not specified\n"
+    
+    metadata += "</UserMetaData>"
+    return metadata
+
+
 def get_date_time(timezone: str = "UTC"):
   
     return datetime.now(ZoneInfo(timezone))
